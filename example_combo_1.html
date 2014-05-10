@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EwokJS - Example Combo 1</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="ewokJS.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            
+            var testData = [
+                {id:1, nombre:"Pizzas"},
+                {id:2, nombre:"Empanadas"},
+                {id:3, nombre:"Pastas"}
+            ];      
+            
+            var comboTest;
+            
+            function doTest()
+            {
+                comboTest = new $Combo("cmbTest");
+                comboTest.setDataProvider(testData, "id", "nombre");
+                comboTest.add(-1, "-- Todos --");
+                comboTest.setOnChange(comboTest_Change);
+            }
+            function comboTest_Change()
+            {
+                alert(comboTest.getSelectedItem().nombre);
+            }
+        </script>
+    </head>
+    <body onload="doTest();">
+        <div>
+            <select id="cmbTest"></select>
+        </div>
+    </body>
+</html>
