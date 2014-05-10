@@ -159,6 +159,41 @@ function $Combo(idHtmlSelect)
 // GRID
 function $Grid(idContainerDiv)
 {
-    var container = $element(idContainerDiv);
-    
+    this.container = $element(idContainerDiv);
+    this.idField = "id";
+    this.dataProvider = null;
+    this.columnsDefs = [
+        {itemField:"id", columnName:"Id"},
+        {itemField:"nombre", columnName:"Nombre"}
+    ];    
+    this.gridTemplate = {
+        render: "<table>@{rows}</table>",
+        separator: ""
+    };    
+    this.gridRowTemplate = {
+        render: "<tr>@{columns}</tr>",
+        separator: ""
+    };
+    this.gridTHColumnTemplate = {
+        render: "<th>@{columnName}</th>",
+        separator: ""
+    };
+    this.gridTDColumnTemplate = {
+        render: "<td>@{itemValue}</td>",
+        separator: ""
+    };
+    this.setDataProvider = function(dataProvider, idField)
+    {
+        this.dataProvider = dataProvider;
+        this.idField = idField;
+    };
+    this.render = function()
+    {
+        // TH ROW CONTENT
+        var thRowContent = $renderObject({columns: $renderCollection(this.columnsDefs, this.gridTHColumnTemplate)}, this.gridRowTemplate);        
+        // EACH TD ROW CONTENT
+        // ...
+        // RENDER GRID
+        $renderObject({rows: thRowContent}, this.gridTemplate, this.container);
+    };
 }
