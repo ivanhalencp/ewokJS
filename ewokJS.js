@@ -162,10 +162,7 @@ function $Grid(idContainerDiv)
     this.container = $element(idContainerDiv);
     this.idField = "id";
     this.dataProvider = null;
-    this.columnsDefs = [
-        {itemField:"id", columnName:"Id"},
-        {itemField:"nombre", columnName:"Nombre"}
-    ];    
+    this.columnsDefs = [];    
     this.gridTemplate = {
         render: "<table>@{rows}</table>",
         separator: ""
@@ -174,26 +171,49 @@ function $Grid(idContainerDiv)
         render: "<tr>@{columns}</tr>",
         separator: ""
     };
-    this.gridTHColumnTemplate = {
-        render: "<th>@{columnName}</th>",
+    this.gridHeaderColumnTemplate = {
+        render: "<th class='@{headerCellClass}' style='@{headerCellStyle}'>@{columnName}</th>",
         separator: ""
     };
     this.gridTDColumnTemplate = {
-        render: "<td>@{itemValue}</td>",
+        render: "<td class='@{cellClass}' style='@{cellStyle}'>@{itemValue}</td>",
         separator: ""
     };
     this.setDataProvider = function(dataProvider, idField)
     {
         this.dataProvider = dataProvider;
         this.idField = idField;
+        this.render();
     };
     this.render = function()
     {
+        var allRowsContent = "";
         // TH ROW CONTENT
-        var thRowContent = $renderObject({columns: $renderCollection(this.columnsDefs, this.gridTHColumnTemplate)}, this.gridRowTemplate);        
+        allRowsContent += $renderObject({columns: $renderCollection(this.columnsDefs, this.gridHeaderColumnTemplate)}, this.gridRowTemplate);
         // EACH TD ROW CONTENT
-        // ...
+        var item;
+        var itemFieldName;
+        var itemValue;
+        var itemRender = {};
+        var tdRowContent;                    
+        for (var it = 0; it < this.dataProvider.length; it++)
+        {
+            tdRowContent = "";
+            item = this.dataProvider[it];                
+            for (var itColumnDef = 0; itColumnDef < this.columnsDefs.length; itColumnDef++)
+            {
+                itemFieldName = this.columnsDefs[itColumnDef].itemField;                
+                itemValue = item[itemFieldName];
+                itemRender = {
+                    itemValue:itemValue,
+                    cellClass:this.columnsDefs[itColumnDef].cellClass,
+                    cellStyle:this.columnsDefs[itColumnDef].cellStyle
+                };
+                tdRowContent += $renderObject(itemRender, this.gridTDColumnTemplate);                 
+            }
+            allRowsContent += $renderObject({columns: tdRowContent}, this.gridRowTemplate);
+        }
         // RENDER GRID
-        $renderObject({rows: thRowContent}, this.gridTemplate, this.container);
+        $renderObject({rows: allRowsContent}, this.gridTemplate, this.container);
     };
 }
