@@ -82,7 +82,21 @@ function $renderCollection(collection, template, container)
     else
         return renderTemplate;
 }
-// ** COMPONENTS **
+// ** COMPONENTS ** 
+var ewokComponents = [];
+ 
+function ewokRegistrateNewComponent(ewokComponent)
+{
+    var index = ewokComponents.length;
+    ewokComponents.push(ewokComponent);
+    return index;
+}
+
+function ewokProcessAction(ewokComponentIndex, action, params)
+{   
+    eval("ewokComponents[" + ewokComponentIndex + "]." + action + "(" + params + ");");
+}
+ 
 // COMBO
 function $Combo(idHtmlSelect)
 {    
@@ -155,6 +169,8 @@ function $Combo(idHtmlSelect)
     {
         this.htmlSelect.onchange = onChangeCallBack;
     };
+    // REGISTRATE COMPONENT
+    this.ewokCompoenentIndex = ewokRegistrateNewComponent(this);
 }
 // GRID
 function $Grid(idContainerDiv)
@@ -162,13 +178,26 @@ function $Grid(idContainerDiv)
     this.container = $element(idContainerDiv);
     this.idField = "id";
     this.dataProvider = null;
-    this.columnsDefs = [];    
+    this.columnsDefs = [];
+    this.onRowClick = "";
+    this.selectedItem = null;
     this.gridTemplate = {
         render: "<table>@{rows}</table>",
         separator: ""
-    };    
-    this.gridRowTemplate = {
+    }; 
+    this.rowClick = function(itemIndex)
+    {
+        this.selectedItem = this.dataProvider[itemIndex];
+        alert("Evento interno -> Click at item: " + JSON.stringify(this.selectedItem));
+        if (this.onRowClick != "")
+            this.onRowClick(this.selectedItem);
+    };
+    this.gridHeaderRowTemplate = {
         render: "<tr>@{columns}</tr>",
+        separator: ""
+    };
+    this.gridRowTemplate = {
+        render: "<tr onclick='ewokProcessAction(@{ewokComponentIndex}, \"rowClick\", @{rowIndex});'>@{columns}</tr>",
         separator: ""
     };
     this.gridHeaderColumnTemplate = {
@@ -189,13 +218,14 @@ function $Grid(idContainerDiv)
     {
         var allRowsContent = "";
         // TH ROW CONTENT
-        allRowsContent += $renderObject({columns: $renderCollection(this.columnsDefs, this.gridHeaderColumnTemplate)}, this.gridRowTemplate);
+        allRowsContent += $renderObject({columns: $renderCollection(this.columnsDefs, this.gridHeaderColumnTemplate)}, this.gridHeaderRowTemplate);
         // EACH TD ROW CONTENT
         var item;
         var itemFieldName;
         var itemValue;
         var itemRender = {};
-        var tdRowContent;                    
+        var tdRowContent;
+        var rowClickHandler;
         for (var it = 0; it < this.dataProvider.length; it++)
         {
             tdRowContent = "";
@@ -211,9 +241,15 @@ function $Grid(idContainerDiv)
                 };
                 tdRowContent += $renderObject(itemRender, this.gridTDColumnTemplate);                 
             }
-            allRowsContent += $renderObject({columns: tdRowContent}, this.gridRowTemplate);
+            /* if (this.onRowClick != "")
+                rowClickHandler = this.onRowClick + "(" + it + ");";
+            else
+                rowClickHandler = ""; */
+            allRowsContent += $renderObject({columns: tdRowContent, rowIndex:it, ewokComponentIndex: this.ewokCompoenentIndex}, this.gridRowTemplate);
         }
         // RENDER GRID
         $renderObject({rows: allRowsContent}, this.gridTemplate, this.container);
     };
+    // REGISTRATE COMPONENT
+    this.ewokCompoenentIndex = ewokRegistrateNewComponent(this);
 }

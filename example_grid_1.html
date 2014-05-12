@@ -4,6 +4,29 @@
         <title>EwokJS - Example Grid 1</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="ewokJS.js" type="text/javascript"></script>
+        <style type="text/css">
+            table
+            {
+                width: 500px;
+                background-color: #468847;
+                color: whitesmoke;
+                font-family: Verdana;
+            }
+            th
+            {
+                background-color: white;
+                color: black;
+            }
+            tr
+            {
+                background-color: black;
+            }
+            tr:hover
+            {
+                background-color: lightgray;
+                color: black;                
+            }            
+        </style>
         <script type="text/javascript">
             
             var testData = [
@@ -17,12 +40,24 @@
             function doTest()
             {                                
                 gridTest = new $Grid("gridTestContainer");
-                gridTest.columnsDefs = [
+                /* gridTest.columnsDefs = [
                     {itemField:"id", columnName:"Id", headerCellClass: "", headerCellStyle: "color:red;", cellClass: "", cellStyle: "color:red;"},
                     {itemField:"nombre", columnName:"Nombre", headerCellClass: "", headerCellStyle: "", cellClass: "", cellStyle: ""},
                     {itemField:"apellido", columnName:"Apellido", headerCellClass: "", headerCellStyle: "", cellClass: "", cellStyle: ""}
-                ];    
+                ]; */                
+                gridTest.columnsDefs = [
+                    {itemField:"id", columnName:"Id", cellStyle: "text-align: center; font-weight: bold; color: red;"},
+                    {itemField:"nombre", columnName:"Nombre"},
+                    {itemField:"apellido", columnName:"Apellido"}
+                ];
+                
+                gridTest.onRowClick = rowClickTest;
                 gridTest.setDataProvider(testData, "id");
+            }
+            
+            function rowClickTest(item)
+            {
+                alert("Evento externo -> Click at item: " + JSON.stringify(item));
             }
             
             function addTest()
