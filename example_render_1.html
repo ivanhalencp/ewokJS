@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EwokJS - Example Combo 1</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="ewokJS.js" type="text/javascript"></script>
+        
+        <style> 
+            body
+            {
+                font-family: Arial;
+                font-size: 14px;
+            }            
+            .itemContainer
+            {
+                font-size: 12px;
+                font-family: Arial;
+                border: solid black thin;
+                border-radius: 5px;
+                padding: 10px;
+                margin-bottom: 5px;
+                width: 360px;
+                background-color: #b2dba1;
+            }
+            .itemContainer:hover
+            {
+                background-color: orange;
+            }
+        </style>
+        
+        <script type="text/javascript">
+            
+            var testData = [
+                {id:1, nombre:"Juan", apellido:"Perez", telefono:"099444555", "email":"jp@email.com"},
+                {id:2, nombre:"Gonzalo", apellido:"Lopez", telefono:"099333444", "email":"gl@email.com"},
+                {id:3, nombre:"Nicolas", apellido:"Rodriguez", telefono:"099222555", "email":"---"},
+                {id:4, nombre:"Julio", apellido:"Gonzales", telefono:"26826644", "email":"jg@email.com"},
+                {id:5, nombre:"Andres", apellido:"Gutierrez", telefono:"26957755", "email":"ag@email.com"}
+            ];      
+            
+            var itemRender = {
+                render: "<div class='itemContainer' onclick='item_Click(@{__itemIndex__})'><b>Nombre:</b> @{nombre} @{apellido}<br /><b>Tel:</b> @{telefono}<br /><b>Email:</b> @{email}</div>",
+                separator: ""
+            };
+            
+            function doTest()
+            {
+                $renderCollection(testData, itemRender, $element("renderCollection_testContainer"));
+            }
+            function item_Click(itemIndex)
+            {                
+                var item = testData[itemIndex];
+                $renderObject(item, itemRender, $element("renderObject_testContainer"));
+            }
+        </script>
+    </head>
+    <body onload="doTest();">
+        Lista de Items: (Render Collection)<br /><br />        
+        <div id="renderCollection_testContainer"></div>
+        <hr>
+        Item Seleccionado: (Render Object)<br /><br />        
+        <div id ="renderObject_testContainer">No se ha seleccionado un item.</div>
+    </body>
+</html>

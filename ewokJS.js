@@ -38,14 +38,34 @@ function $isset(param)
         resultado = true;
     return resultado;
 }
+// MOSTRAR ELEMENTO
+function $show(element)
+{
+    $cssSet(element, 'display', 'initial');
+}
+// OCULTAR ELEMENTO
+function $hide(element)
+{
+    if ($isArray(element))
+    {
+        for (var n = 0; n < $count(element); n++)
+        {
+            $cssSet(element[n], 'display', 'none');
+        }
+    }
+    else
+        $cssSet(element, 'display', 'none');
+}
 // INCLUDE
 function $include(src)
 {
     document.write('<script type="text/javascript" src="' + src + '"></script'+'>');
 }
 // RENDER OBJECT
-function $renderObject(object, template, container)
-{    
+function $renderObject(object, template, container, itemIndex)
+{
+    if (!$isset(itemIndex))
+        itemIndex = -1;
     var renderTemplate = template.render;
     var posStart = renderTemplate.indexOf("@{");
     var posEnd = 0;
@@ -53,14 +73,17 @@ function $renderObject(object, template, container)
     {
         posEnd = renderTemplate.indexOf("}", posEnd + 1);
         var paramName = renderTemplate.substring(posStart + 2, posEnd);
-        if ($isset(object[paramName]))
+        if ($isset(object[paramName]) || paramName === "__itemIndex__")
         {
-            renderTemplate = renderTemplate.replace("@{" + paramName + "}", object[paramName]);
+            if (paramName === "__itemIndex__")
+                renderTemplate = renderTemplate.replace("@{" + paramName + "}", itemIndex);
+            else
+                renderTemplate = renderTemplate.replace("@{" + paramName + "}", object[paramName]);
             posEnd = 0;
         }   
         posStart = renderTemplate.indexOf("@{", posEnd + 1);
     }
-    if ($isset(container))
+    if ($isset(container) && container !== null)
         $content(container, renderTemplate);    
     else
         return renderTemplate;
@@ -74,7 +97,7 @@ function $renderCollection(collection, template, container)
     {
        if (!firstElement)
            renderTemplate += template.separator;
-       renderTemplate += $renderObject(collection[n], template);
+       renderTemplate += $renderObject(collection[n], template, null, n);
        firstElement = false;
     }
     if ($isset(container))
@@ -188,7 +211,7 @@ function $Grid(idContainerDiv)
     this.rowClick = function(itemIndex)
     {
         this.selectedItem = this.dataProvider[itemIndex];
-        alert("Evento interno -> Click at item: " + JSON.stringify(this.selectedItem));
+        // alert("Evento interno -> Click at item: " + JSON.stringify(this.selectedItem));
         if (this.onRowClick != "")
             this.onRowClick(this.selectedItem);
     };
@@ -225,7 +248,7 @@ function $Grid(idContainerDiv)
         var itemValue;
         var itemRender = {};
         var tdRowContent;
-        var rowClickHandler;
+        // var rowClickHandler;
         for (var it = 0; it < this.dataProvider.length; it++)
         {
             tdRowContent = "";
