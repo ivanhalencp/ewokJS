@@ -1,2 +1,2 @@
-EWOKJS - Javascript Framework for Web Applications
-ivanhalen@gmail.com | www.surbit.com.uy
+EwokJS - Javascript framework for web applications
+ivanhalen@gmail.com | www.surbit.uy
